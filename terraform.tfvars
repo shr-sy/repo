@@ -1,0 +1,5 @@
+resource_group_name   = "rg-policy-test"
+location              = "Central India"
+app_service_plan_name = "asp-policy-test"
+app_service_name      = "app-policy-test"
+apim_name             = "apim-policy-test"
