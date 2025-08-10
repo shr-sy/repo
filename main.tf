@@ -2,7 +2,7 @@ terraform {
   required_providers {
     azurerm = {
       source  = "hashicorp/azurerm"
-      version = "~> 3.0"
+      version = "~> 3.100"
     }
   }
 }
@@ -11,39 +11,36 @@ provider "azurerm" {
   features {}
 }
 
+# 1️⃣ Resource Group
 resource "azurerm_resource_group" "main" {
   name     = var.resource_group_name
   location = var.location
 }
 
-resource "azurerm_app_service_plan" "plan" {
+# 2️⃣ Service Plan (Linux)
+resource "azurerm_service_plan" "plan" {
   name                = var.app_service_plan_name
   location            = azurerm_resource_group.main.location
   resource_group_name = azurerm_resource_group.main.name
-  kind                = "Linux"
-  reserved            = true
-
-  sku {
-    tier = "Basic"
-    size = "B1"
-  }
+  os_type             = "Linux"
+  sku_name            = "B1"
 }
 
-resource "azurerm_app_service" "app" {
+# 3️⃣ Linux Web App
+resource "azurerm_linux_web_app" "app" {
   name                = var.app_service_name
   location            = azurerm_resource_group.main.location
   resource_group_name = azurerm_resource_group.main.name
-  app_service_plan_id = azurerm_app_service_plan.plan.id
+  service_plan_id     = azurerm_service_plan.plan.id
 
   site_config {
-    linux_fx_version = "NODE|18-lts"
-  }
-
-  tags = {
-    project = "apim-hello"
+    application_stack {
+      node_version = "18-lts"
+    }
   }
 }
 
+# 4️⃣ API Management Instance
 resource "azurerm_api_management" "apim" {
   name                = var.apim_name
   location            = azurerm_resource_group.main.location
@@ -53,22 +50,23 @@ resource "azurerm_api_management" "apim" {
   sku_name            = "Developer_1"
 }
 
+# 5️⃣ API linked to Web App
 resource "azurerm_api_management_api" "api" {
   name                = "hello-world-api"
   resource_group_name = azurerm_resource_group.main.name
   api_management_name = azurerm_api_management.apim.name
+  revision            = "1"
   display_name        = "Hello World API"
   path                = "hello"
   protocols           = ["https"]
-  revision            = "1"
 
-  # direct backend (App Service)
-  service_url = "https://${azurerm_app_service.app.default_site_hostname}"
-
-  # allow calling without subscription key
-  subscription_required = false
+  import {
+    content_format = "swagger-link-json"
+    content_value  = "https://${azurerm_linux_web_app.app.default_hostname}/swagger.json"
+  }
 }
 
+# 6️⃣ API Policy
 resource "azurerm_api_management_api_policy" "policy" {
   api_name            = azurerm_api_management_api.api.name
   api_management_name = azurerm_api_management.apim.name
