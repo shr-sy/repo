@@ -25,9 +25,13 @@ jobs:
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
 
+      - name: Get App Service name from Terraform output
+        id: tf_output
+        run: echo "APP_NAME=$(terraform output -raw app_service_name)" >> $GITHUB_ENV
+        working-directory: .
 
       - name: Deploy to Azure Web App
         uses: azure/webapps-deploy@v2
         with:
-          app-name: ${{ secrets.AZURE_WEBAPP_NAME }}
-          package: app
+          app-name: ${{ env.APP_NAME }}
+          package: .
