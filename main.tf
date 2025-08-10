@@ -51,6 +51,7 @@ resource "azurerm_api_management" "apim" {
 }
 
 # 5️⃣ API linked to Web App
+# 5️⃣ API linked to Web App (Option 2 - Inline OpenAPI)
 resource "azurerm_api_management_api" "api" {
   name                = "hello-world-api"
   resource_group_name = azurerm_resource_group.main.name
@@ -61,10 +62,30 @@ resource "azurerm_api_management_api" "api" {
   protocols           = ["https"]
 
   import {
-    content_format = "swagger-link-json"
-    content_value  = "https://${azurerm_linux_web_app.app.default_hostname}/swagger.json"
+    content_format = "openapi+json"
+    content_value  = <<EOT
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "Hello World API",
+    "version": "1.0.0"
+  },
+  "paths": {
+    "/": {
+      "get": {
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    }
   }
 }
+EOT
+  }
+}
+
 
 # 6️⃣ API Policy
 resource "azurerm_api_management_api_policy" "policy" {
