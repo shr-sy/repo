@@ -25,25 +25,8 @@ jobs:
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
 
-     # Install Terraform
-      - name: Setup Terraform
-        uses: hashicorp/setup-terraform@v3
-        with:
-          terraform_version: 1.7.5 # or your version
-
-      # Init Terraform in the folder containing your .tf files
-      - name: Terraform Init
-        run: terraform init
-        working-directory: .  # change if .tf files are in root
-
-      # Get App Service name from Terraform state
-      - name: Get App Service name
-        run: echo "APP_NAME=$(terraform output -raw app_service_name)" >> $GITHUB_ENV
-        working-directory: .  # same directory as above
-
-      # Deploy code to Azure Web App
       - name: Deploy to Azure Web App
         uses: azure/webapps-deploy@v2
         with:
-          app-name: ${{ env.APP_NAME }}
-          package: .
+          app-name: app-policy-test
+          package: app
