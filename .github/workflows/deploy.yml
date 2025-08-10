@@ -18,7 +18,7 @@ jobs:
 
       - name: Install dependencies
         working-directory: app
-        run: npm ci
+        run: npm install
 
       - name: Login to Azure
         uses: azure/login@v1
