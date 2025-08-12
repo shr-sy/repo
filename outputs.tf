@@ -13,3 +13,7 @@ output "resource_group_name" {
 output "app_service_name" {
   value = azurerm_linux_web_app.app.name
 }
+
+output "oauth_server_name" {
+  value = azurerm_api_management_authorization_server.oauth_server.name
+}
