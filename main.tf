@@ -93,8 +93,11 @@ resource "azurerm_api_management_authorization_server" "oauth_server" {
   api_management_name = azurerm_api_management.apim.name
   display_name        = "My OAuth 2.0 Server"
 
-  authorization_endpoint = "https://login.microsoftonline.com/${var.tenant_id}/oauth2/v2.0/authorize"
-  token_endpoint         = "https://login.microsoftonline.com/${var.tenant_id}/oauth2/v2.0/token"
+  authorization_endpoint        = "https://login.microsoftonline.com/${var.tenant_id}/oauth2/v2.0/authorize"
+  token_endpoint                = "https://login.microsoftonline.com/${var.tenant_id}/oauth2/v2.0/token"
+  
+  # informational URL (required)
+  client_registration_endpoint  = "https://portal.azure.com/#blade/Microsoft_AAD_RegisteredApps/ApplicationsListBlade"
 
   grant_types = [
     "authorizationCode",
@@ -105,6 +108,9 @@ resource "azurerm_api_management_authorization_server" "oauth_server" {
   client_secret = var.oauth_client_secret
 
   authorization_methods = ["GET", "POST"]
+
+  # Recommended to explicitly specify how token is sent back
+  bearer_token_sending_methods = ["authorizationHeader"]
 }
 
 resource "azurerm_api_management_api_policy" "policy_oauth" {
@@ -140,3 +146,4 @@ resource "azurerm_api_management_api_policy" "policy_oauth" {
 </policies>
 XML
 }
+
