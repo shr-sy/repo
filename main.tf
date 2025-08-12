@@ -93,9 +93,8 @@ resource "azurerm_api_management_authorization_server" "oauth_server" {
   api_management_name = azurerm_api_management.apim.name
   display_name        = "My OAuth 2.0 Server"
 
-  authorization_endpoint        = "https://login.microsoftonline.com/${var.tenant_id}/oauth2/v2.0/authorize"
-  token_endpoint                = "https://login.microsoftonline.com/${var.tenant_id}/oauth2/v2.0/token"
-  client_registration_endpoint  = "https://portal.azure.com/#blade/Microsoft_AAD_RegisteredApps/ApplicationsListBlade"
+  authorization_endpoint = "https://login.microsoftonline.com/${var.tenant_id}/oauth2/v2.0/authorize"
+  token_endpoint         = "https://login.microsoftonline.com/${var.tenant_id}/oauth2/v2.0/token"
 
   grant_types = [
     "authorizationCode",
@@ -117,7 +116,12 @@ resource "azurerm_api_management_api_policy" "policy_oauth" {
 <policies>
   <inbound>
     <base />
-    <validate-jwt header-name="Authorization" failed-validation-httpcode="401" require-expiration-time="true" require-scheme="Bearer" require-signed-tokens="true">
+    <validate-jwt header-name="Authorization"
+                  failed-validation-httpcode="401"
+                  failed-validation-error-message="Unauthorized. Access token is missing or invalid."
+                  require-expiration-time="true"
+                  require-scheme="Bearer"
+                  require-signed-tokens="true">
       <openid-config url="https://login.microsoftonline.com/${var.tenant_id}/v2.0/.well-known/openid-configuration" />
       <audiences>
         <audience>${var.api_audience}</audience>
@@ -125,7 +129,7 @@ resource "azurerm_api_management_api_policy" "policy_oauth" {
     </validate-jwt>
   </inbound>
   <backend>
-    <base />
+    <forward-request />
   </backend>
   <outbound>
     <base />
