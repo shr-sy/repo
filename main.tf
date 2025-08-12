@@ -87,34 +87,6 @@ EOT
   }
 }
 
-
-# 6️⃣ API Policy
-resource "azurerm_api_management_api_policy" "policy" {
-  api_name            = azurerm_api_management_api.api.name
-  api_management_name = azurerm_api_management.apim.name
-  resource_group_name = azurerm_resource_group.main.name
-
-  xml_content = <<XML
-<policies>
-  <inbound>
-    <set-header name="X-Example" exists-action="override">
-      <value>HelloFromPolicy</value>
-    </set-header>
-    <base />
-  </inbound>
-  <backend>
-    <base />
-  </backend>
-  <outbound>
-    <base />
-  </outbound>
-  <on-error>
-    <base />
-  </on-error>
-</policies>
-XML
-}
-
 resource "azurerm_api_management_authorization_server" "oauth_server" {
   name                = "my-oauth-server"
   resource_group_name = azurerm_resource_group.main.name
