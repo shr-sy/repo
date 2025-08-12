@@ -136,7 +136,7 @@ resource "azurerm_api_management_authorization_server" "oauth_server" {
   authorization_methods = ["GET", "POST"]
 }
 
-resource "azurerm_api_management_api_policy" "policy" {
+resource "azurerm_api_management_api_policy" "policy_oauth" {
   api_name            = azurerm_api_management_api.api.name
   api_management_name = azurerm_api_management.apim.name
   resource_group_name = azurerm_resource_group.main.name
