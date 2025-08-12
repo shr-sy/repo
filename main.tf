@@ -115,15 +115,14 @@ resource "azurerm_api_management_api_policy" "policy" {
 XML
 }
 
-# 6️⃣ OAuth 2.0 Authorization Server in APIM
 resource "azurerm_api_management_authorization_server" "oauth_server" {
   name                = "my-oauth-server"
   resource_group_name = azurerm_resource_group.main.name
   api_management_name = azurerm_api_management.apim.name
   display_name        = "My OAuth 2.0 Server"
 
-  authorization_endpoint        = "https://login.microsoftonline.com/<tenant-id>/oauth2/v2.0/authorize"
-  token_endpoint                = "https://login.microsoftonline.com/<tenant-id>/oauth2/v2.0/token"
+  authorization_endpoint        = "https://login.microsoftonline.com/${var.tenant_id}/oauth2/v2.0/authorize"
+  token_endpoint                = "https://login.microsoftonline.com/${var.tenant_id}/oauth2/v2.0/token"
   client_registration_endpoint  = "https://portal.azure.com/#blade/Microsoft_AAD_RegisteredApps/ApplicationsListBlade"
 
   grant_types = [
@@ -131,13 +130,12 @@ resource "azurerm_api_management_authorization_server" "oauth_server" {
     "clientCredentials"
   ]
 
-  client_id     = "<your-client-id>"
-  client_secret = "<your-client-secret>"
+  client_id     = var.oauth_client_id
+  client_secret = var.oauth_client_secret
 
   authorization_methods = ["GET", "POST"]
 }
 
-# 7️⃣ API Policy with JWT validation
 resource "azurerm_api_management_api_policy" "policy" {
   api_name            = azurerm_api_management_api.api.name
   api_management_name = azurerm_api_management.apim.name
@@ -148,9 +146,9 @@ resource "azurerm_api_management_api_policy" "policy" {
   <inbound>
     <base />
     <validate-jwt header-name="Authorization" failed-validation-httpcode="401" require-expiration-time="true" require-scheme="Bearer" require-signed-tokens="true">
-      <openid-config url="https://login.microsoftonline.com/<tenant-id>/v2.0/.well-known/openid-configuration" />
+      <openid-config url="https://login.microsoftonline.com/${var.tenant_id}/v2.0/.well-known/openid-configuration" />
       <audiences>
-        <audience>api://<your-api-client-id></audience>
+        <audience>${var.api_audience}</audience>
       </audiences>
     </validate-jwt>
   </inbound>
