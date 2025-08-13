@@ -1,8 +1,8 @@
-resource_group_name   = "rg-policy-test"
+resource_group_name   = "rg-zwerter"
 location              = "Central India"
-app_service_plan_name = "asp-policy-test"
-app_service_name      = "app-policy-test"
-apim_name             = "apim-policy-test"
+app_service_plan_name = "asp-plan-sername"
+app_service_name      = "app-sernameasd"
+apim_name             = "apim-qwer"
 
 # New OAuth values
 tenant_id             = "bc2e6364-d970-4392-87a4-2bfe5ec07c6f"
