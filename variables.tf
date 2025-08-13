@@ -1,45 +1,25 @@
-variable "resource_group_name" {
+variable "subscription_id" {
+  description = "Azure subscription ID"
   type        = string
-  description = "Resource Group name"
 }
 
-variable "location" {
+variable "client_id" {
+  description = "Azure service principal client ID"
   type        = string
-  description = "Azure location"
 }
 
-variable "app_service_plan_name" {
+variable "client_secret" {
+  description = "Azure service principal client secret"
   type        = string
-  description = "App Service Plan name"
-}
-
-variable "app_service_name" {
-  type        = string
-  description = "App Service name"
-}
-
-variable "apim_name" {
-  type        = string
-  description = "API Management name"
 }
 
 variable "tenant_id" {
+  description = "Azure tenant ID"
   type        = string
-  description = "Azure AD Tenant ID"
 }
 
-variable "oauth_client_id" {
+variable "location" {
+  description = "Azure location"
   type        = string
-  description = "Client ID from Azure AD App Registration"
-}
-
-variable "oauth_client_secret" {
-  type        = string
-  description = "Client Secret from Azure AD App Registration"
-  sensitive   = true
-}
-
-variable "api_audience" {
-  type        = string
-  description = "API App ID URI set in Azure AD"
+  default     = "East US"
 }
