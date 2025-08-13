@@ -1,45 +1,29 @@
 variable "resource_group_name" {
   type        = string
   description = "Resource Group name"
+  default     = "rg-policy-test"
 }
 
 variable "location" {
   type        = string
   description = "Azure location"
+  default     = "eastus"
 }
 
 variable "app_service_plan_name" {
   type        = string
   description = "App Service Plan name"
+  default     = "asp-policy-test"
 }
 
 variable "app_service_name" {
   type        = string
   description = "App Service name"
+  default     = "app-policy-test"
 }
 
 variable "apim_name" {
   type        = string
-  description = "API Management name"
-}
-
-variable "tenant_id" {
-  type        = string
-  description = "Azure AD Tenant ID"
-}
-
-variable "oauth_client_id" {
-  type        = string
-  description = "Client ID from Azure AD App Registration"
-}
-
-variable "oauth_client_secret" {
-  type        = string
-  description = "Client Secret from Azure AD App Registration"
-  sensitive   = true
-}
-
-variable "api_audience" {
-  type        = string
-  description = "API App ID URI set in Azure AD"
+  description = "API Management service name"
+  default     = "apim-policy-test"
 }
