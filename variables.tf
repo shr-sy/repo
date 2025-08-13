@@ -13,14 +13,16 @@ variable "app_service_plan_name" {
   description = "App Service Plan name"
 }
 
-variable "app_service_name" {
+# Base name for App Service (will get a random suffix automatically)
+variable "app_service_base_name" {
   type        = string
-  description = "App Service name"
+  description = "Base App Service name (suffix will be auto-generated)"
 }
 
-variable "apim_name" {
+# Base name for API Management (will get a random suffix automatically)
+variable "apim_base_name" {
   type        = string
-  description = "API Management name"
+  description = "Base APIM name (suffix will be auto-generated)"
 }
 
 variable "tenant_id" {
