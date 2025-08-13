@@ -4,9 +4,16 @@ on:
   push:
     branches: [ main ]
 
+env:
+  SUBSCRIPTION_ID: 610a3b56-4971-4c4c-888c-177312c951b3
+  LOCATION: eastus
+  APIM_NAME: apim-policy-test
+  UNIQUE_SUFFIX: ${{ github.run_id }}
+
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
@@ -25,9 +32,23 @@ jobs:
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
 
+      # Purge APIM if it's in soft-delete state
+      - name: Purge Soft-Deleted APIM Service (if exists)
+        run: |
+          echo "Checking for soft-deleted APIM service: $APIM_NAME"
+          if az rest --method get \
+            --url "https://management.azure.com/subscriptions/${SUBSCRIPTION_ID}/providers/Microsoft.ApiManagement/locations/${LOCATION}/deletedservices?api-version=2021-08-01" \
+            --output json | jq -r ".value[]?.name" | grep -qi "^${APIM_NAME}$"; then
+            echo "Soft-deleted APIM found. Purging..."
+            az rest --method delete \
+              --url "https://management.azure.com/subscriptions/${SUBSCRIPTION_ID}/providers/Microsoft.ApiManagement/locations/${LOCATION}/deletedservices/${APIM_NAME}?api-version=2021-08-01"
+            echo "Purge complete."
+          else
+            echo "No soft-deleted APIM found with that name."
+          fi
 
       - name: Deploy to Azure Web App
         uses: azure/webapps-deploy@v2
         with:
-          app-name: app-policy-test
+          app-name: app-policy-test-${{ env.UNIQUE_SUFFIX }}
           package: app
