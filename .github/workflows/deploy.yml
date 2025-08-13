@@ -5,7 +5,7 @@ on:
     branches: [ main ]
 
 jobs:
-  build-and-deploy:
+  deploy:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repo
@@ -25,9 +25,14 @@ jobs:
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
 
+      - name: Get App Service Name from Terraform Output
+        id: tf-output
+        run: |
+          APP_NAME=$(terraform output -raw app_service_name)
+          echo "app_name=$APP_NAME" >> $GITHUB_ENV
 
       - name: Deploy to Azure Web App
         uses: azure/webapps-deploy@v2
         with:
-          app-name: app-policy-test
+          app-name: ${{ env.app_name }}
           package: app
