@@ -4,11 +4,28 @@ terraform {
       source  = "hashicorp/azurerm"
       version = "~> 3.100"
     }
+    random = {
+      source  = "hashicorp/random"
+      version = "~> 3.6"
+    }
   }
 }
 
 provider "azurerm" {
   features {}
+}
+
+# Generate a random suffix to ensure unique names
+resource "random_string" "suffix" {
+  length  = 5
+  upper   = false
+  special = false
+}
+
+# Local variables for unique names
+locals {
+  app_service_name = "${var.app_service_base_name}-${random_string.suffix.result}"
+  apim_name        = "${var.apim_base_name}-${random_string.suffix.result}"
 }
 
 # 1️⃣ Resource Group
@@ -28,7 +45,7 @@ resource "azurerm_service_plan" "plan" {
 
 # 3️⃣ Linux Web App
 resource "azurerm_linux_web_app" "app" {
-  name                = var.app_service_name
+  name                = local.app_service_name
   location            = azurerm_resource_group.main.location
   resource_group_name = azurerm_resource_group.main.name
   service_plan_id     = azurerm_service_plan.plan.id
@@ -42,7 +59,7 @@ resource "azurerm_linux_web_app" "app" {
 
 # 4️⃣ API Management Instance
 resource "azurerm_api_management" "apim" {
-  name                = var.apim_name
+  name                = local.apim_name
   location            = azurerm_resource_group.main.location
   resource_group_name = azurerm_resource_group.main.name
   publisher_name      = "Dev Team"
@@ -87,6 +104,7 @@ EOT
   }
 }
 
+# 6️⃣ OAuth 2.0 Authorization Server
 resource "azurerm_api_management_authorization_server" "oauth_server" {
   name                = "my-oauth-server"
   resource_group_name = azurerm_resource_group.main.name
@@ -95,8 +113,6 @@ resource "azurerm_api_management_authorization_server" "oauth_server" {
 
   authorization_endpoint        = "https://login.microsoftonline.com/${var.tenant_id}/oauth2/v2.0/authorize"
   token_endpoint                = "https://login.microsoftonline.com/${var.tenant_id}/oauth2/v2.0/token"
-  
-  # informational URL (required)
   client_registration_endpoint  = "https://portal.azure.com/#blade/Microsoft_AAD_RegisteredApps/ApplicationsListBlade"
 
   grant_types = [
@@ -107,12 +123,11 @@ resource "azurerm_api_management_authorization_server" "oauth_server" {
   client_id     = var.oauth_client_id
   client_secret = var.oauth_client_secret
 
-  authorization_methods = ["GET", "POST"]
-
-  # Recommended to explicitly specify how token is sent back
-  bearer_token_sending_methods = ["authorizationHeader"]
+  authorization_methods          = ["GET", "POST"]
+  bearer_token_sending_methods   = ["authorizationHeader"]
 }
 
+# 7️⃣ API Policy for OAuth
 resource "azurerm_api_management_api_policy" "policy_oauth" {
   api_name            = azurerm_api_management_api.api.name
   api_management_name = azurerm_api_management.apim.name
@@ -146,4 +161,3 @@ resource "azurerm_api_management_api_policy" "policy_oauth" {
 </policies>
 XML
 }
-
