@@ -33,12 +33,6 @@ variable "oauth_client_id" {
   description = "Client ID from Azure AD App Registration"
 }
 
-variable "oauth_client_secret" {
-  type        = string
-  description = "Client Secret from Azure AD App Registration"
-  sensitive   = true
-}
-
 variable "api_audience" {
   type        = string
   description = "API App ID URI set in Azure AD"
