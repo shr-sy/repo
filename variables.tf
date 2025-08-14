@@ -28,10 +28,10 @@ variable "tenant_id" {
   description = "Azure AD Tenant ID"
 }
 
-#variable "oauth_client_id" {
-#  type        = string
-#  description = "Client ID from Azure AD App Registration"
-#}
+variable "oauth_client_id" {
+  type        = string
+  description = "Client ID from Azure AD App Registration"
+}
 
 variable "api_audience" {
   type        = string
