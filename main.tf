@@ -118,24 +118,69 @@ resource "azurerm_api_management_api_policy" "policy_oauth" {
   api_management_name = azurerm_api_management.apim.name
   resource_group_name = azurerm_resource_group.main.name
 
-  xml_content = <<XML
+  #xml_content = <<XML
+#<policies>
+  #<inbound>
+    #<base />
+    #<validate-jwt header-name="Authorization"
+                  #failed-validation-httpcode="401"
+                  #failed-validation-error-message="Unauthorized. Access token is missing or invalid."
+                  #require-expiration-time="true"
+                  #require-scheme="Bearer"
+                  #require-signed-tokens="true">
+      #<openid-config url="https://login.microsoftonline.com/${var.tenant_id}/v2.0/.well-known/openid-configuration" />
+      #<audiences>
+        #<audience>${var.api_audience}</audience>
+      #</audiences>
+    #</validate-jwt>
+  #</inbound>
+  #<backend>
+    #<forward-request />
+  #</backend>
+  #<outbound>
+    #<base />
+  #</outbound>
+  #<on-error>
+    #<base />
+  #</on-error>
+#</policies>
+#XML
+xml_content = <<XML
 <policies>
   <inbound>
     <base />
-    <validate-jwt header-name="Authorization"
-                  failed-validation-httpcode="401"
-                  failed-validation-error-message="Unauthorized. Access token is missing or invalid."
-                  require-expiration-time="true"
-                  require-scheme="Bearer"
-                  require-signed-tokens="true">
-      <openid-config url="https://login.microsoftonline.com/${var.tenant_id}/v2.0/.well-known/openid-configuration" />
-      <audiences>
-        <audience>${var.api_audience}</audience>
-      </audiences>
-    </validate-jwt>
+    <!-- Check for Authorization header -->
+    <check-header name="Authorization" failed-check-httpcode="401" failed-check-error-message="Access denied - Missing Authorization header" ignore-case="false" />
+    
+    <!-- Forward Authorization header as-is to backend -->
+    <set-header name="X-User-Token" exists-action="override">
+      <value>@(context.Request.Headers.GetValueOrDefault("Authorization",""))</value>
+    </set-header>
+    
+    <!-- CORS headers -->
+    <cors>
+      <allowed-origins>
+        <origin>*</origin>
+      </allowed-origins>
+      <allowed-methods>
+        <method>GET</method>
+        <method>POST</method>
+        <method>PUT</method>
+        <method>DELETE</method>
+        <method>OPTIONS</method>
+      </allowed-methods>
+      <allowed-headers>
+        <header>Authorization</header>
+        <header>Content-Type</header>
+        <header>Ocp-Apim-Subscription-Key</header>
+      </allowed-headers>
+      <expose-headers>
+        <header>X-User-Token</header>
+      </expose-headers>
+    </cors>
   </inbound>
   <backend>
-    <forward-request />
+    <base />
   </backend>
   <outbound>
     <base />
