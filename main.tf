@@ -87,14 +87,15 @@ EOT
   }
 }
 
+# 6️⃣ OAuth 2.0 Server in API Management
 resource "azurerm_api_management_authorization_server" "oauth_server" {
   name                = "my-oauth-server"
   resource_group_name = azurerm_resource_group.main.name
   api_management_name = azurerm_api_management.apim.name
   display_name        = "My OAuth 2.0 Server"
 
-  authorization_endpoint        = "https://login.microsoftonline.com/${var.tenant_id}/oauth2/v2.0/authorize"
-  token_endpoint                = "https://login.microsoftonline.com/${var.tenant_id}/oauth2/v2.0/token"
+  authorization_endpoint        = "https://login.microsoftonline.com/${env.OAUTH_TENANT_ID}/oauth2/v2.0/authorize"
+  token_endpoint                = "https://login.microsoftonline.com/${env.OAUTH_TENANT_ID}/oauth2/v2.0/token"
   
   # informational URL (required)
   client_registration_endpoint  = "https://portal.azure.com/#blade/Microsoft_AAD_RegisteredApps/ApplicationsListBlade"
@@ -104,15 +105,15 @@ resource "azurerm_api_management_authorization_server" "oauth_server" {
     "clientCredentials"
   ]
 
-  #client_id     = var.oauth_client_id
-  #client_secret = var.oauth_client_secret
+  client_id     = env.OAUTH_CLIENT_ID
+  client_secret = env.OAUTH_CLIENT_SECRET
 
   authorization_methods = ["GET", "POST"]
 
-  # Recommended to explicitly specify how token is sent back
   bearer_token_sending_methods = ["authorizationHeader"]
 }
 
+# 7️⃣ API Policy for OAuth
 resource "azurerm_api_management_api_policy" "policy_oauth" {
   api_name            = azurerm_api_management_api.api.name
   api_management_name = azurerm_api_management.apim.name
@@ -128,9 +129,9 @@ resource "azurerm_api_management_api_policy" "policy_oauth" {
                   require-expiration-time="true"
                   require-scheme="Bearer"
                   require-signed-tokens="true">
-      <openid-config url="https://login.microsoftonline.com/${var.tenant_id}/v2.0/.well-known/openid-configuration" />
+      <openid-config url="https://login.microsoftonline.com/${env.OAUTH_TENANT_ID}/v2.0/.well-known/openid-configuration" />
       <audiences>
-        <audience>${var.api_audience}</audience>
+        <audience>${env.OAUTH_API_AUDIENCE}</audience>
       </audiences>
     </validate-jwt>
   </inbound>
