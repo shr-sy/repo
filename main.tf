@@ -105,7 +105,7 @@ resource "azurerm_api_management_authorization_server" "oauth_server" {
   ]
 
   client_id     = var.oauth_client_id
-  client_secret = var.oauth_client_secret
+  #client_secret = var.oauth_client_secret
 
   authorization_methods = ["GET", "POST"]
 
