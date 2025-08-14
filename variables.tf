@@ -23,17 +23,17 @@ variable "apim_name" {
   description = "API Management name"
 }
 
-#variable "tenant_id" {
-#  type        = string
-#  description = "Azure AD Tenant ID"
-#}
+variable "tenant_id" {
+  type        = string
+  description = "Azure AD Tenant ID"
+}
 
 #variable "oauth_client_id" {
 #  type        = string
 #  description = "Client ID from Azure AD App Registration"
 #}
 
-#variable "api_audience" {
-#  type        = string
-#  description = "API App ID URI set in Azure AD"
-#}
+variable "api_audience" {
+  type        = string
+  description = "API App ID URI set in Azure AD"
+}
