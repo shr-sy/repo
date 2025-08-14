@@ -1,4 +1,4 @@
-resource_group_name   = "rg-asdw"
+resource_group_name   = "rg-test"
 location              = "Central India"
 app_service_plan_name = "asp-plan-qps"
 app_service_name      = "app-qps"
