@@ -1,11 +1,9 @@
-resource_group_name   = "rg-zwerter"
+resource_group_name   = "rg-asdw"
 location              = "Central India"
-app_service_plan_name = "asp-plan-sername"
-app_service_name      = "app-sernameasd"
-apim_name             = "apim-qwer"
+app_service_plan_name = "asp-plan-asd"
+app_service_name      = "app-asd"
+apim_name             = "apim-asd"
 
-# New OAuth values
-tenant_id             = "bc2e6364-d970-4392-87a4-2bfe5ec07c6f"
-oauth_client_id       = "33fe0d82-b2dd-4ec9-9e1e-e1297a9b9a38"
-oauth_client_secret   = "d-G8Q~PZlOiA7jczBwtXKlKY0j0Qe3JOgG8c-cD"
-api_audience          = "api://215a6f36-665b-4b09-a4ab-70247bef08a9"
+tenant_id             = "1eb73f30-ae95-483b-990a-3388241a7762"
+oauth_client_id       = "14a62d97-fd22-4f21-942f-b3fbfc90b99a"
+api_audience          = "api://14a62d97-fd22-4f21-942f-b3fbfc90b99a"
