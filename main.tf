@@ -150,17 +150,14 @@ xml_content = <<XML
 <policies>
   <inbound>
     <base />
+    <!-- Check for Authorization header -->
+    <check-header name="Authorization" failed-check-httpcode="401" failed-check-error-message="Access denied - Missing Authorization header" ignore-case="false" />
     
-    <!-- Always set Authorization header (for testing) -->
-    <set-header name="Authorization" exists-action="override">
-      <value>Bearer my-static-test-token-123</value>
-    </set-header>
-    
-    <!-- Forward same value to backend if needed -->
+    <!-- Forward Authorization header as-is to backend -->
     <set-header name="X-User-Token" exists-action="override">
-      <value>Bearer my-static-test-token-123</value>
+      <value>@(context.Request.Headers.GetValueOrDefault("Authorization",""))</value>
     </set-header>
-
+    
     <!-- CORS headers -->
     <cors>
       <allowed-origins>
@@ -195,8 +192,3 @@ xml_content = <<XML
 </policies>
 XML
 }
-
-
-
-
-
